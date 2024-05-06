@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane minHeight="550.0" minWidth="500.0" prefHeight="550.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.anitiger.musicplayer.controllers.MainViewController">
+   <VBox alignment="TOP_CENTER" prefHeight="550.0" prefWidth="500.0">
+      <Label prefHeight="40.0" text="Music player">
+         <font>
+            <Font name="FreeSans Bold" size="24.0" />
+         </font>
+         <VBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </VBox.margin>
+      </Label>
+      <HBox alignment="CENTER" prefHeight="40.0" prefWidth="200.0">
+         <Label text="Current playlist:">
+            <font>
+               <Font name="FreeSans" size="22.0" />
+            </font>
+            <HBox.margin>
+               <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </HBox.margin>
+         </Label>
+         <ChoiceBox fx:id="playlistChoiceBox" prefWidth="150.0">
+            <HBox.margin>
+               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </HBox.margin></ChoiceBox>
+         <Button mnemonicParsing="false" text="Add">
+            <HBox.margin>
+               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </HBox.margin>
+            <font>
+               <Font name="FreeSans" size="14.0" />
+            </font>
+         </Button>
+         <VBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </VBox.margin>
+      </HBox>
+      <ProgressBar prefHeight="20.0" prefWidth="400.0" progress="0.0" />
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+         <ImageView fx:id="backButton" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+            <HBox.margin>
+               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </HBox.margin>
+         </ImageView>
+         <ImageView fx:id="playButton" fitHeight="80.0" fitWidth="80.0" onMouseClicked="#onPlayButtonClicked" pickOnBounds="true" preserveRatio="true">
+            <HBox.margin>
+               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </HBox.margin></ImageView>
+         <ImageView fx:id="nextButton" fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">
+            <HBox.margin>
+               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </HBox.margin></ImageView>
+      </HBox>
+   </VBox>
+</AnchorPane>

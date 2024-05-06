@@ -5,7 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Track {
+public class Track implements Externalizable {
     private static final SimpleDateFormat sdfForReleaseDate = new SimpleDateFormat("yyyy-MM-dd");
     private static final SimpleDateFormat sdfForAddedAt = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss");
     private static long globalTrackId = 0;
@@ -14,9 +14,8 @@ public class Track {
     private String trackAuthors;
     private long trackDuration; // in seconds
     private String genre;
-    private String trackReleaseAlbum;
-    private Date trackReleaseDate;
     private Date trackAddedAt;
+    private File trackPath;
 
     public Track() {
         trackId = globalTrackId++;
@@ -24,8 +23,7 @@ public class Track {
         trackAuthors = "";
         trackDuration = 0;
         genre = "";
-        trackReleaseAlbum = "";
-        trackReleaseDate = null;
+        trackPath = null;
         try {
             trackAddedAt = sdfForAddedAt.parse(sdfForAddedAt.format(new Date()));
         } catch (ParseException e) {
@@ -33,17 +31,16 @@ public class Track {
         }
     }
 
-    public Track(String trackTitle, String trackAuthors, long trackDuration, String genre, String trackReleaseAlbum, String trackReleaseDate) throws ParseException {
-        if (trackTitle.isEmpty() || trackAuthors.isEmpty() || trackDuration == 0 || trackReleaseDate.isEmpty() || genre.isEmpty()) {
-            throw new IllegalArgumentException("Track title, track authors, track duration, track release date and genre must not be empty.");
+    public Track(String trackTitle, String trackAuthors, long trackDuration, String genre, File trackPath) throws ParseException {
+        if (trackTitle.isEmpty() || trackAuthors.isEmpty() || trackDuration == 0 || genre.isEmpty()) {
+            throw new IllegalArgumentException("Track title, track authors, track duration and genre must not be empty.");
         }
         this.trackId = globalTrackId++;
         this.trackTitle = trackTitle;
         this.trackAuthors = trackAuthors;
         this.trackDuration = trackDuration;
         this.genre = genre;
-        this.trackReleaseAlbum = trackReleaseAlbum;
-        this.trackReleaseDate = sdfForReleaseDate.parse(trackReleaseDate);
+        this.trackPath = trackPath;
         this.trackAddedAt = sdfForAddedAt.parse(sdfForAddedAt.format(new Date()));
     }
 
@@ -66,13 +63,8 @@ public class Track {
     public String getGenre() {
         return this.genre;
     }
-
-    public String getTrackReleaseAlbum() {
-        return this.trackReleaseAlbum;
-    }
-
-    public Date getTrackReleaseDate() {
-        return this.trackReleaseDate;
+    public File getTrackPath() {
+        return this.trackPath;
     }
 
     public Date getTrackAddedAt() {
@@ -84,24 +76,18 @@ public class Track {
         System.out.println("\tID: " + this.trackId);
         System.out.println("\tDuration: " + this.trackDuration);
         System.out.println("\tGenre: " + this.genre);
-        if (this.trackReleaseAlbum.isEmpty()) {
-            System.out.println("\tSingle release");
-        } else {
-            System.out.println("\tRelease album: " + this.trackReleaseAlbum);
-        }
-        System.out.println("\tRelease date: " + sdfForReleaseDate.format(this.trackReleaseDate));
+        System.out.println("\tTrack path: " + this.trackPath.getAbsolutePath());
         System.out.println("\tTrack was added: " + sdfForAddedAt.format(this.trackAddedAt));
     }
 
-    /*@Override
+    @Override
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeLong(trackId);
         out.writeUTF(trackTitle);
         out.writeUTF(trackAuthors);
         out.writeLong(trackDuration);
         out.writeUTF(genre);
-        out.writeUTF(trackReleaseAlbum);
-        out.writeUTF(sdfForReleaseDate.format(trackReleaseDate));
+        out.writeUTF(trackPath.getAbsolutePath());
         out.writeUTF(sdfForAddedAt.format(trackAddedAt));
     }
 
@@ -122,12 +108,15 @@ public class Track {
         }
         this.trackDuration = durationBuffer;
         this.genre = in.readUTF();
-        this.trackReleaseAlbum = in.readUTF();
         try {
-            this.trackReleaseDate = sdfForReleaseDate.parse(in.readUTF());
+            this.trackPath = new File(in.readUTF());
+        } catch (IOException e) {
+            throw new InvalidObjectException("Track path is invalid");
+        }
+        try {
             this.trackAddedAt = sdfForAddedAt.parse(in.readUTF());
         } catch (ParseException e) {
             throw new InvalidObjectException("Parse error" + e.getMessage() + e.getStackTrace()[0]);
         }
-    }*/
+    }
 }
