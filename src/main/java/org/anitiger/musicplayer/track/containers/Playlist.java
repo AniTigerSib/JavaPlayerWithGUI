@@ -1,14 +1,14 @@
 package org.anitiger.musicplayer.track.containers;
 
+import org.anitiger.musicplayer.App;
 import org.anitiger.musicplayer.track.Track;
-import org.anitiger.musicplayer.track.containers.TrackContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.InvalidObjectException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.io.Serial;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
@@ -22,19 +22,32 @@ public class Playlist extends TrackContainer {
     private Date playlistCreatedAt;
     private Date playlistLastUpdatedAt;
     private boolean isSaved;
-
+    private static final Logger logger = LoggerFactory.getLogger(Playlist.class);
     public Playlist() {
         playlistId = globalPlaylistId++;
         playlistTitle = "New Playlist";
+        tracks = new ArrayList<>();
         try {
             playlistCreatedAt = sdf.parse(sdf.format(new Date()));
             playlistLastUpdatedAt = playlistCreatedAt;
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            logger.error(e.getMessage());
         }
     }
-    public String Title() {
+    public Playlist(String title) {
+        this();
+        playlistTitle = title;
+    }
+    public Playlist(File file) throws IOException {
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+        this.readExternal(ois);
+        ois.close();
+    }
+    public String getTitle() {
         return playlistTitle;
+    }
+    public ArrayList<Track> getTracks() {
+        return tracks;
     }
     public void addTrack(Track track) throws ParseException {
         tracks.add(track);
@@ -72,19 +85,17 @@ public class Playlist extends TrackContainer {
         return tracks.get(index - 1);
     }
     @Override
-    public void writeExternal(ObjectOutput out) throws java.io.IOException {
+    public void writeExternal(ObjectOutput out) throws IOException {
         out.writeLong(playlistId);
         out.writeUTF(playlistTitle);
         out.writeUTF(sdf.format(playlistCreatedAt));
-        out.writeUTF(sdf.format(playlistLastUpdatedAt));
-        out.writeInt(tracks.size());
         for (Track track : tracks) {
             track.writeExternal(out);
         }
         this.isSaved = true;
     }
     @Override
-    public void readExternal(ObjectInput in) throws java.io.IOException {
+    public void readExternal(ObjectInput in) throws IOException {
         long idBuffer = in.readLong();
         if (idBuffer <= globalPlaylistId) {
             this.playlistId = globalPlaylistId++;
@@ -97,10 +108,9 @@ public class Playlist extends TrackContainer {
             playlistCreatedAt = sdf.parse(in.readUTF());
             playlistLastUpdatedAt = sdf.parse(sdf.format(new Date()));
         } catch (ParseException e) {
-            throw new InvalidObjectException("Parse error" + e.getMessage() + e.getStackTrace()[0]);
+            throw new InvalidObjectException("Parse error" + e.getMessage());
         }
-        int trackCount = in.readInt();
-        for (int i = 0; i < trackCount; i++) {
+        while (in.available() > 0){
             Track track = new Track();
             track.readExternal(in);
             tracks.add(track);

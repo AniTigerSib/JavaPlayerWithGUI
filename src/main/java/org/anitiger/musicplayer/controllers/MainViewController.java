@@ -1,29 +1,34 @@
 package org.anitiger.musicplayer.controllers;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.anitiger.musicplayer.App;
+import org.anitiger.musicplayer.track.Track;
 import org.anitiger.musicplayer.track.containers.Playlist;
+import org.anitiger.musicplayer.track.models.TrackModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.*;
 import java.util.Objects;
-import java.util.ResourceBundle;
 
-public class MainViewController implements Initializable {
+public class MainViewController {
     @FXML
-    protected Label playlistName;
+    protected AnchorPane anchorPane;
     @FXML
     protected ImageView backButton;
     @FXML
@@ -33,6 +38,16 @@ public class MainViewController implements Initializable {
     // protected ImageView shuffleButton;
     @FXML
     protected ChoiceBox<String> playlistChoiceBox;
+    @FXML
+    protected TableView<TrackModel> playlistTableView;
+    @FXML
+    protected TableColumn<TrackModel, Long> trackIdColumn;
+    @FXML
+    protected TableColumn<TrackModel, String> trackTitleColumn;
+    @FXML
+    protected TableColumn<TrackModel, String> trackArtistColumn;
+    @FXML
+    protected TableColumn<TrackModel, Long> trackDurationColumn;
     private static final Logger logger = LoggerFactory.getLogger(MainViewController.class);
     @FXML
     protected void onPlayButtonClicked() {
@@ -50,44 +65,98 @@ public class MainViewController implements Initializable {
     protected void onNextButtonClicked() {
         App.PlayNext();
     }
-//    @FXML
-//    protected void onPlaylistCbClicked() {
-//        if (playlistChoiceBox.showingProperty().get()) {
-//            playlistChoiceBox.hide();
-//            try {
-//                App.currentPlaylist = App.playlists.get(playlistChoiceBox.getSelectionModel().getSelectedIndex());
-//            } catch (IndexOutOfBoundsException e) {
-//                logger.error("Playlist not found");
-//            }
-//        } else {
-//            playlistChoiceBox.show();
-//        }
-////        App.currentPlaylist = App.playlists.get(playlistChoiceBox.getSelectionModel().getSelectedIndex());
-////        playlistName.setText(App.currentPlaylist.Title());
-//    }
-
-    public void setPlaylistName(String playlistName) {
-        this.playlistName.setText(playlistName);
+    @FXML
+    protected void onBackButtonClicked() {
+        App.PlayPrevious();
+    }
+    @FXML
+    protected void onActionAddPlaylistButton() {
+        try {
+            Stage stage = new Stage();
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("PlaylistAddWindow.fxml"));
+            Parent root = loader.load();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Add Playlist");
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(anchorPane.getScene().getWindow());
+            stage.showAndWait();
+            updatePlaylists();
+        } catch (IOException e) {
+            logger.error("Failed to load PlaylistAddWindow.fxml; Cause: " + e.getMessage());
+        }
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    protected void onActionSaveButton() {
+        String dirPath = "/home/" + System.getProperty("user.name") + "/Music/";
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            logger.info("Creating directory " + dirPath);
+            boolean res = false;
+            try {
+                res = dir.mkdir();
+            } catch (SecurityException e) {
+                logger.error("Failed to create directory " + dirPath + "; Cause: " + e.getMessage());
+            }
+            if (!res) {
+                logger.error("Failed to create directory " + dirPath);
+            } else {
+                logger.info("Directory " + dirPath + " created");
+            }
+        }
+        File file = new File(dirPath + App.currentPlaylist.getTitle());
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(file));
+            App.currentPlaylist.writeExternal(oos);
+            oos.close();
+            logger.info("Playlist " + App.currentPlaylist.getTitle() + " saved");
+        } catch (IOException e) {
+            logger.error("Failed to save playlist " + App.currentPlaylist.getTitle() + "; Cause: " + e.getMessage());
+        }
+    }
+
+    protected void updatePlaylists() {
+        ObservableList<String> playlists = FXCollections.observableArrayList();
+        for (int i = 0; i < App.playlists.size(); i++) {
+            playlists.add(App.playlists.get(i).getTitle());
+        }
+        playlistChoiceBox.setItems(playlists);
+    }
+
+    protected void updateTrackTableView() {
+        ObservableList<TrackModel> tracks = FXCollections.observableArrayList();
+        for (int i = 0; i < App.currentPlaylist.getTracks().size(); i++) {
+            tracks.add(new TrackModel(App.currentPlaylist.getTracks().get(i)));
+        }
+        playlistTableView.setItems(tracks);
+    }
+
+    @FXML
+    public void initialize() {
         backButton.setImage(new Image(Objects.requireNonNull(getClass().getResource("/img/back.png")).toString()));
         playButton.setImage(new Image(Objects.requireNonNull(getClass().getResource("/img/play.png")).toString()));
         nextButton.setImage(new Image(Objects.requireNonNull(getClass().getResource("/img/next.png")).toString()));
-        ObservableList<String> playlistTitles = FXCollections.observableArrayList();
-        App.playlists.forEach(playlist -> {
-            playlistTitles.add(playlist.Title());
-        });
-        playlistChoiceBox.setItems(FXCollections.observableArrayList(playlistTitles));
+        updatePlaylists();
         // if the item of the list is changed
         playlistChoiceBox.getSelectionModel().selectedIndexProperty().addListener((ov, value, new_value) -> {
             // set the new value
             App.currentPlaylist = App.playlists.get(new_value.intValue());
-            playlistName.setText(App.currentPlaylist.Title());
+            updateTrackTableView();
             // set the text for the label to the selected item
-            logger.info("Playlist " + playlistName + " selected");
+            logger.info("Playlist " + App.currentPlaylist.getTitle() + " selected");
         });
-//        playlistChoiceBox.setItems(playlistTitles);
+        TableView.TableViewSelectionModel<TrackModel> selectionModel = playlistTableView.getSelectionModel();
+        selectionModel.setSelectionMode(SelectionMode.SINGLE);
+        selectionModel.selectedItemProperty().addListener((ov, value, new_value) -> {
+            if (new_value != null) {
+                App.currentTrack = App.currentPlaylist.getTrackById(new_value.idProperty().get());
+                logger.info("Track " + App.currentTrack.getTrackTitle() + " selected");
+            }
+        });
+        trackIdColumn.setCellValueFactory(new PropertyValueFactory<TrackModel, Long>("id"));
+        trackTitleColumn.setCellValueFactory(new PropertyValueFactory<TrackModel, String>("title"));
+        trackArtistColumn.setCellValueFactory(new PropertyValueFactory<TrackModel, String>("artist"));
+        trackDurationColumn.setCellValueFactory(new PropertyValueFactory<TrackModel, Long>("duration"));
+        logger.info("MainViewController initialized");
     }
 }

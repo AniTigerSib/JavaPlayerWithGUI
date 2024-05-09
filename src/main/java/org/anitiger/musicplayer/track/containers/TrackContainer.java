@@ -34,12 +34,6 @@ public abstract class TrackContainer implements Externalizable {
         }
         return null;
     }
-    public void printTrackById(long id) {
-        getTrackById(id).print();
-    }
-    public void printTrackByTitle(String title) {
-        getTrackByTitle(title).print();
-    }
     public void printByNumber(int number) {
         tracks.get(number).print();
     }
