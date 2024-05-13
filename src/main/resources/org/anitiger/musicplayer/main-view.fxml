@@ -6,8 +6,8 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="600.0" style="-fx-background-color: linear-gradient(to bottom right, #7896af, #34db90);;" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.anitiger.musicplayer.controllers.MainViewController">
-   <VBox alignment="TOP_CENTER" prefHeight="650.0" prefWidth="600.0">
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="600.0" style="-fx-background-color: linear-gradient(to bottom right, #7896af, #34db90);;" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.anitiger.musicplayer.controllers.MainViewController">
+   <VBox alignment="TOP_CENTER" prefWidth="600.0">
       <Label prefHeight="40.0" text="Music player">
          <font>
             <Font name="FreeSans Bold" size="27.0" />
@@ -63,7 +63,7 @@
                   <Insets right="34.0" />
                </HBox.margin>
             </Label>
-            <Button mnemonicParsing="false" text="Add new track">
+            <Button mnemonicParsing="false" onAction="#onActionAddTrackButton" text="Add new track">
                <font>
                   <Font name="FreeSans" size="14.0" />
                </font>
@@ -73,7 +73,7 @@
             <Insets bottom="5.0" left="20.0" right="20.0" />
          </VBox.margin>
       </HBox>
-      <TableView fx:id="playlistTableView" editable="true" prefHeight="200.0" prefWidth="200.0">
+      <TableView fx:id="playlistTableView" editable="true" prefHeight="300.0" prefWidth="200.0">
         <columns>
            <TableColumn fx:id="trackIdColumn" maxWidth="1100.0" prefWidth="40.0" resizable="false" text="ID" />
            <TableColumn fx:id="trackTitleColumn" prefWidth="75.0" text="Title" />
@@ -100,6 +100,9 @@
             <HBox.margin>
                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </HBox.margin></ImageView>
+         <VBox.margin>
+            <Insets bottom="20.0" top="20.0" />
+         </VBox.margin>
       </HBox>
    </VBox>
 </AnchorPane>

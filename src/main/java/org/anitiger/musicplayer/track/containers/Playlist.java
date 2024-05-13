@@ -1,6 +1,5 @@
 package org.anitiger.musicplayer.track.containers;
 
-import org.anitiger.musicplayer.App;
 import org.anitiger.musicplayer.track.Track;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,9 +59,6 @@ public class Playlist extends TrackContainer {
     public void removeTrack(Track track) throws ParseException {
         tracks.remove(track);
         playlistLastUpdatedAt = sdf.parse(sdf.format(new Date()));
-    }
-    public Track getFirst() {
-        return tracks.getFirst();
     }
     public Track getNext(Track track) {
         int index = tracks.indexOf(track);

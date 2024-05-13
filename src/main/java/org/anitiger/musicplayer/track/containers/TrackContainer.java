@@ -20,7 +20,7 @@ public abstract class TrackContainer implements Externalizable {
     public abstract void addTrack(Track track) throws ParseException;
     public Track getTrackById(long id) {
         for (Track track : tracks) {
-            if (track.getTrackId() == id) {
+            if (track.getId() == id) {
                 return track;
             }
         }
@@ -28,7 +28,7 @@ public abstract class TrackContainer implements Externalizable {
     }
     public Track getTrackByTitle(String title) {
         for (Track track : tracks) {
-            if (track.getTrackTitle().equals(title)) {
+            if (track.getTitle().equals(title)) {
                 return track;
             }
         }
@@ -39,7 +39,7 @@ public abstract class TrackContainer implements Externalizable {
     }
     public void printAll() {
         for (int i = 0; i < tracks.size(); i++) {
-            System.out.println((i + 1) + ". " + tracks.get(i).getTrackTitle());
+            System.out.println((i + 1) + ". " + tracks.get(i).getTitle());
         }
     }
     public Track removeTrackById(long id) {

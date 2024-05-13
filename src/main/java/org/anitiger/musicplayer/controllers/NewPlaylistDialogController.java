@@ -33,13 +33,15 @@ public class NewPlaylistDialogController {
     @FXML
     protected void onFileChose() {
         selectedFile = fileChooser.showOpenDialog(null);
-        logger.info("Selected file: " + selectedFile.getAbsolutePath());
+        if (selectedFile != null) {
+            logger.info("Selected file: " + selectedFile.getAbsolutePath());
+        }
     }
 
     @FXML
     protected void onAccept() {
         try {
-            Playlist playlistToAdd = null;
+            Playlist playlistToAdd;
             if (selectedFile == null) {
                 if (titleField.getText().isEmpty()) {
                     logger.warn("No file selected and no title entered");
@@ -48,7 +50,7 @@ public class NewPlaylistDialogController {
                 playlistToAdd = new Playlist(titleField.getText());
             } else {
                 playlistToAdd = new Playlist(selectedFile);
-                logger.info("Playlist uploaded from file: " + selectedFile.getAbsolutePath());
+                logger.debug("Playlist uploaded from file: " + selectedFile.getAbsolutePath());
             }
             if (App.isPlaylistAlreadyExists(playlistToAdd)) {
                 logger.warn("Playlist already exists");
@@ -68,7 +70,6 @@ public class NewPlaylistDialogController {
     }
 	@FXML
 	private void initialize() {
-        titleField.setText("");
         logger.info("NewPlaylistDialogController initialized");
     }
 }

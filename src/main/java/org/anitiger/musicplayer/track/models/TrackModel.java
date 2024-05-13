@@ -10,19 +10,13 @@ public class TrackModel {
     private final ObjectProperty<Long> id = new SimpleObjectProperty<>(0L);
     private final StringProperty title = new SimpleStringProperty("");
     private final StringProperty artist = new SimpleStringProperty("");
-    private final ObjectProperty<Long> duration = new SimpleObjectProperty<>(0L);
+    private final ObjectProperty<Double> duration = new SimpleObjectProperty<>(0.0);
 
     public TrackModel(Track track) {
-        this.id.set(track.getTrackId());
-        this.title.set(track.getTrackTitle());
-        this.artist.set(track.getTrackAuthors());
-        this.duration.set(track.getTrackDuration());
-    }
-    public TrackModel(long id, String title, String artist, long duration) {
-        this.id.set(id);
-        this.title.set(title);
-        this.artist.set(artist);
-        this.duration.set(duration);
+        this.id.set(track.getId());
+        this.title.set(track.getTitle());
+        this.artist.set(track.getAuthor());
+        this.duration.set(track.getDuration());
     }
 
     public ObjectProperty<Long> idProperty() {
@@ -34,7 +28,7 @@ public class TrackModel {
     public StringProperty artistProperty() {
         return artist;
     }
-    public ObjectProperty<Long> durationProperty() {
+    public ObjectProperty<Double> durationProperty() {
         return duration;
     }
 }

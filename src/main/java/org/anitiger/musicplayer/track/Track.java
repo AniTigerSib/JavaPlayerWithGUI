@@ -6,13 +6,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Track implements Externalizable {
-    private static final SimpleDateFormat sdfForReleaseDate = new SimpleDateFormat("yyyy-MM-dd");
     private static final SimpleDateFormat sdfForAddedAt = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss");
     private static long globalTrackId = 0;
     private long trackId;
     private String trackTitle;
-    private String trackAuthors;
-    private long trackDuration; // in seconds
+    private String trackAuthor;
+    private double trackDuration; // in seconds
     private String genre;
     private Date trackAddedAt;
     private File trackPath;
@@ -20,7 +19,7 @@ public class Track implements Externalizable {
     public Track() {
         trackId = globalTrackId++;
         trackTitle = "";
-        trackAuthors = "";
+        trackAuthor = "";
         trackDuration = 0;
         genre = "";
         trackPath = null;
@@ -31,32 +30,32 @@ public class Track implements Externalizable {
         }
     }
 
-    public Track(String trackTitle, String trackAuthors, long trackDuration, String genre, File trackPath) throws ParseException {
+    public Track(String trackTitle, String trackAuthors, double trackDuration, String genre, File trackPath) throws ParseException {
         if (trackTitle.isEmpty() || trackAuthors.isEmpty() || trackDuration == 0 || genre.isEmpty()) {
             throw new IllegalArgumentException("Track title, track authors, track duration and genre must not be empty.");
         }
         this.trackId = globalTrackId++;
         this.trackTitle = trackTitle;
-        this.trackAuthors = trackAuthors;
+        this.trackAuthor = trackAuthors;
         this.trackDuration = trackDuration;
         this.genre = genre;
         this.trackPath = trackPath;
         this.trackAddedAt = sdfForAddedAt.parse(sdfForAddedAt.format(new Date()));
     }
 
-    public long getTrackId() {
+    public long getId() {
         return this.trackId;
     }
 
-    public String getTrackTitle() {
+    public String getTitle() {
         return this.trackTitle;
     }
 
-    public String getTrackAuthors() {
-        return this.trackAuthors;
+    public String getAuthor() {
+        return this.trackAuthor;
     }
 
-    public long getTrackDuration() {
+    public double getDuration() {
         return this.trackDuration;
     }
 
@@ -72,7 +71,7 @@ public class Track implements Externalizable {
     }
     public void print() {
         System.out.println("Title: " + this.trackTitle);
-        System.out.println("\tAuthors: " + this.trackAuthors);
+        System.out.println("\tAuthors: " + this.trackAuthor);
         System.out.println("\tID: " + this.trackId);
         System.out.println("\tDuration: " + this.trackDuration);
         System.out.println("\tGenre: " + this.genre);
@@ -84,8 +83,8 @@ public class Track implements Externalizable {
     public void writeExternal(ObjectOutput out) throws IOException {
         out.writeLong(trackId);
         out.writeUTF(trackTitle);
-        out.writeUTF(trackAuthors);
-        out.writeLong(trackDuration);
+        out.writeUTF(trackAuthor);
+        out.writeDouble(trackDuration);
         out.writeUTF(genre);
         out.writeUTF(trackPath.getAbsolutePath());
         out.writeUTF(sdfForAddedAt.format(trackAddedAt));
@@ -101,7 +100,7 @@ public class Track implements Externalizable {
             globalTrackId = ++idBuffer;
         }
         this.trackTitle = in.readUTF();
-        this.trackAuthors = in.readUTF();
+        this.trackAuthor = in.readUTF();
         long durationBuffer = in.readLong();
         if (durationBuffer <= 0) {
             throw new InvalidObjectException("Track duration is negative or zero");

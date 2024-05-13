@@ -10,8 +10,10 @@ module org.anitiger.musicplayer {
     requires org.slf4j;
     requires javafx.media;
 
-    opens org.anitiger.musicplayer to javafx.fxml;
-    exports org.anitiger.musicplayer;
     exports org.anitiger.musicplayer.controllers;
     opens org.anitiger.musicplayer.controllers to javafx.fxml;
+    exports org.anitiger.musicplayer;
+    opens org.anitiger.musicplayer to javafx.fxml;
+    exports org.anitiger.musicplayer.track.models;
+    opens org.anitiger.musicplayer.track.models to javafx.base;
 }

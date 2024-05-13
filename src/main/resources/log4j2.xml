@@ -8,11 +8,29 @@
         <Console name="console" target="SYSTEM_OUT" follow="true">
             <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
+        <File name="AppFile" fileName="target/application.log" bufferSize="0" bufferedIO="false">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </File>
+        <File name="Engine" fileName="target/engine.log" bufferSize="0" bufferedIO="false">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </File>
+        <File name="MVCFile" fileName="target/view_controller.log" bufferSize="0" bufferedIO="false">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </File>
     </Appenders>
 
     <Loggers>
-        <Root level="info">
+        <Root level="debug">
             <AppenderRef ref="console"/>
         </Root>
+            <logger name="org.anitiger.musicplayer" level="debug">
+                <AppenderRef ref="AppFile" />
+            </logger>
+            <logger name="org.anitiger.musicplayer.track" level="debug">
+                <AppenderRef ref="Engine" />
+            </logger>
+            <logger name="org.anitiger.musicplayer.controllers" level="debug">
+                <AppenderRef ref="MVCFile" />
+            </logger>
     </Loggers>
 </Configuration>
