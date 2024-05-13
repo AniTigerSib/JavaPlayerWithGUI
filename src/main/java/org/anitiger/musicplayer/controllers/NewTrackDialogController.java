@@ -59,7 +59,7 @@ public class NewTrackDialogController {
             return;
         }
         try {
-            Media media = new Media("file:/" + selectedFile.toString());
+            Media media = new Media(selectedFile.toURI().toString());
             Track track = new Track(titleField.getText(), authorField.getText(), media.getDuration().toSeconds(), genreField.getText(), selectedFile);
             App.currentPlaylist.addTrack(track);
             logger.info("Added track: " + track.getTitle());

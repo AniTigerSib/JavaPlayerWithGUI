@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 public class App extends Application {
@@ -23,6 +24,37 @@ public class App extends Application {
     public static Media media;
     public static MediaPlayer mediaPlayer;
     private static final Logger logger = LoggerFactory.getLogger(App.class);
+
+    public static void RemovePlaylist() {
+        StopTrack();
+        playlists.remove(currentPlaylist);
+        currentPlaylist = null;
+        currentTrack = null;
+        media = null;
+        mediaPlayer = null;
+    }
+
+    public static void RemoveTrack(Track track) {
+        if (track == currentTrack) {
+            StopTrack();
+            Track trackToPlay = currentPlaylist.getNext(track);
+            if (trackToPlay != currentTrack) {
+                try {
+                    currentPlaylist.removeTrack(currentTrack);
+                } catch (ParseException e) {
+                    logger.error("Error parsing time: " + currentTrack.getTitle() + ":\n", e);
+                }
+                PlayTrack(trackToPlay);
+            }
+        } else {
+            try {
+                currentPlaylist.removeTrack(track);
+            } catch (ParseException e) {
+                logger.error("Error parsing time: " + track.getTitle() + ":\n", e);
+            }
+        }
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("main-view.fxml"));

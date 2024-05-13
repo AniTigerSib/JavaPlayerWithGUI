@@ -48,16 +48,17 @@ public class MainViewController {
     protected TableColumn<TrackModel, String> trackArtistColumn;
     @FXML
     protected TableColumn<TrackModel, Double> trackDurationColumn;
+    TableView.TableViewSelectionModel<TrackModel> selectionModel;
     private static final Logger logger = LoggerFactory.getLogger(MainViewController.class);
     private Track trackToPlay;
     @FXML
     protected void onPlayButtonClicked() {
         if (App.mediaPlayer != null && App.mediaPlayer.getStatus().equals(MediaPlayer.Status.PLAYING)) {
             App.StopTrack();
-            playButton.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pause.png"))));
+            playButton.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/play.png"))));
         } else {
             App.PlayTrack(trackToPlay);
-            playButton.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/play.png"))));
+            playButton.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/pause.png"))));
         }
         updateNextTrackLabel();
     }
@@ -90,6 +91,21 @@ public class MainViewController {
         }
     }
     @FXML
+    protected void onActionRemovePlaylistButton() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Remove Playlist");
+        alert.setHeaderText("Are you sure you want to remove this playlist?");
+        alert.setContentText("This action cannot be undone.");
+        alert.showAndWait();
+        if (alert.getResult() == ButtonType.OK) {
+            App.RemovePlaylist();
+            updatePlaylists();
+            updateTrackTableView();
+        } else {
+            logger.info("User cancelled removing playlist.");
+        }
+    }
+    @FXML
     protected void onActionAddTrackButton() {
         if (App.currentPlaylist == null) {
             logger.warn("No playlist selected");
@@ -108,6 +124,24 @@ public class MainViewController {
             updateTrackTableView();
         } catch (IOException e) {
             logger.error("Failed to load track-add-view.fxml; Cause: " + e.getMessage());
+        }
+    }
+    @FXML
+    protected void onActionRemoveTrackButton() {
+        if (trackToPlay == null) {
+            logger.warn("No track selected");
+            return;
+        }
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Remove Track");
+        alert.setHeaderText("Are you sure you want to remove this track?");
+        alert.setContentText("This action cannot be undone.");
+        alert.showAndWait();
+        if (alert.getResult() == ButtonType.OK) {
+            App.RemoveTrack(trackToPlay);
+            updateTrackTableView();
+        } else {
+            logger.info("User cancelled removing track.");
         }
     }
     @FXML
@@ -183,7 +217,7 @@ public class MainViewController {
             App.StopTrack();
             updateTrackTableView();
         });
-        TableView.TableViewSelectionModel<TrackModel> selectionModel = playlistTableView.getSelectionModel();
+        selectionModel = playlistTableView.getSelectionModel();
         selectionModel.setSelectionMode(SelectionMode.SINGLE);
         selectionModel.selectedItemProperty().addListener((ov, value, new_value) -> {
             if (new_value != null) {
