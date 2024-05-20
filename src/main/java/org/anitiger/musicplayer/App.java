@@ -77,8 +77,9 @@ public class App extends Application {
         }
         try {
             if (mediaPlayer == null) {
-                logger.debug("file:/" + currentTrack.getTrackPath().getAbsolutePath());
-                media = new Media("file:/" + currentTrack.getTrackPath().getAbsolutePath());
+                String path = currentTrack.getTrackPath().getAbsolutePath().replace("\\", "/");
+                logger.debug("file:/" + path);
+                media = new Media("file:/" + path);
                 mediaPlayer = new MediaPlayer(media);
             }
             mediaPlayer.play();
