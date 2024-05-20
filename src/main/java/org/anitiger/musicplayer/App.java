@@ -83,9 +83,7 @@ public class App extends Application {
                 mediaPlayer = new MediaPlayer(media);
             }
             mediaPlayer.play();
-            mediaPlayer.setOnStopped(() -> {
-                PlayNext();
-            });
+            mediaPlayer.setOnHalted(App::PlayNext);
             logger.info("Playing track: " + currentTrack.getTitle());
         } catch (Exception e) {
             logger.error("Error playing track: " + currentTrack.getTitle() + ":\n" + e);
