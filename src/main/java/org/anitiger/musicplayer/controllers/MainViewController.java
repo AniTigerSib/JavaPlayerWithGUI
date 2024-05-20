@@ -146,7 +146,7 @@ public class MainViewController {
     }
     @FXML
     protected void onActionSaveButton() {
-        String dirPath = "/home/" + System.getProperty("user.name") + "/Music/";
+        String dirPath = "C:\\users" + System.getProperty("user.name") + "\\Music\\";
         File dir = new File(dirPath);
         if (!dir.exists()) {
             logger.debug("Creating directory " + dirPath);

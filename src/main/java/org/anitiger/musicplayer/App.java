@@ -83,6 +83,9 @@ public class App extends Application {
                 mediaPlayer = new MediaPlayer(media);
             }
             mediaPlayer.play();
+            mediaPlayer.setOnStopped(() -> {
+                PlayNext();
+            });
             logger.info("Playing track: " + currentTrack.getTitle());
         } catch (Exception e) {
             logger.error("Error playing track: " + currentTrack.getTitle() + ":\n" + e);
@@ -91,7 +94,7 @@ public class App extends Application {
     }
     public static void StopTrack() {
         if (mediaPlayer != null && mediaPlayer.getStatus().equals(MediaPlayer.Status.PLAYING)) {
-            mediaPlayer.stop();
+            mediaPlayer.pause();
             logger.info("Stopped track: " + currentTrack.getTitle());
         } else {
             logger.warn("No track to stop");
